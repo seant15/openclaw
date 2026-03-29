@@ -20,7 +20,7 @@ services:
       # - HOOKS_ENABLED=true
       # - HOOKS_TOKEN=my-hook-secret
     volumes:
-      - openclaw-data:/data
+      - /opt/openclaw/data:/data
       # Optional: custom JSON config for complex settings (groups, plugins, etc.)
       # - ./my-openclaw.json:/app/config/openclaw.json
     depends_on:
