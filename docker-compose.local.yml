@@ -12,25 +12,13 @@ services:
       - AUTH_USERNAME=${AUTH_USERNAME:-admin}
       - AUTH_PASSWORD=${AUTH_PASSWORD}
       - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
-      
-      # Gateway Security - Mandatory for non-localhost/proxied access
-      # Try both naming conventions and use JSON array format for lists
-      - GATEWAY_CONTROLUI_ALLOWEDORIGINS=["https://open.unippc24.com"]
-      - OPENCLAW_GATEWAY_CONTROLUI_ALLOWEDORIGINS=["https://open.unippc24.com"]
-      
-      - GATEWAY_TRUSTEDPROXIES=["103.21.244.0/22","103.22.200.0/22","103.31.4.0/22","104.16.0.0/13","104.24.0.0/14","108.162.192.0/18","131.0.72.0/22","141.101.64.0/18","162.158.0.0/15","172.64.0.0/13","173.245.48.0/20","188.114.96.0/20","190.93.240.0/20","197.234.240.0/22","198.41.128.0/17","10.0.0.0/8","127.0.0.1","172.16.0.0/12","192.168.0.0/16"]
-      - OPENCLAW_GATEWAY_TRUSTEDPROXIES=["103.21.244.0/22","103.22.200.0/22","103.31.4.0/22","104.16.0.0/13","104.24.0.0/14","108.162.192.0/18","131.0.72.0/22","141.101.64.0/18","162.158.0.0/15","172.64.0.0/13","173.245.48.0/20","188.114.96.0/20","190.93.240.0/20","197.234.240.0/22","198.41.128.0/17","10.0.0.0/8","127.0.0.1","172.16.0.0/12","192.168.0.0/16"]
-      
-      # Fallback mode - enable this to help bypass origin check if hostname matches
-      - GATEWAY_CONTROLUI_DANGEROUSLYALLOWHOSTHEADERORIGINFALLBACK=true
-      - OPENCLAW_GATEWAY_CONTROLUI_DANGEROUSLYALLOWHOSTHEADERORIGINFALLBACK=true
-
       # Browser sidecar
       - BROWSER_CDP_URL=http://browser:9223
       - BROWSER_DEFAULT_PROFILE=openclaw
       - BROWSER_EVALUATE_ENABLED=true
     volumes:
-      - openclaw-data:/data
+      - /opt/openclaw/data:/data                         # bind mount — preserves data, consistent with docker-compose.yml
+      - ./openclaw.json:/app/config/openclaw.json        # gateway security config (allowedOrigins + trustedProxies)
     depends_on:
       - browser
     restart: unless-stopped
@@ -48,5 +36,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  openclaw-data:
   browser-data:
