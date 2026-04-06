@@ -3,6 +3,7 @@ services:
     image: coollabsio/openclaw:latest
     ports:
       - "${PORT:-8080}:${PORT:-8080}"
+      - "9091:9091"  # OpenClaw Control Center Dashboard
     environment:
       # Provider (at least one required)
       #- ANTHROPIC_API_KEY=sk-ant-...
