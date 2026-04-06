@@ -1,8 +1,9 @@
 services:
   openclaw:
-    image: openclaw:local
+    image: coollabsio/openclaw:latest
     ports:
       - "${PORT:-8080}:${PORT:-8080}"
+      - "9091:9091"  # OpenClaw Control Center Dashboard
     environment:
       # Provider (at least one required)
       - OPENCODE_API_KEY=${OPENCODE_API_KEY}
@@ -22,7 +23,7 @@ services:
     restart: unless-stopped
 
   browser:
-    image: openclaw-browser:local
+    image: coollabsio/openclaw-browser:latest
     environment:
       - PUID=1000
       - PGID=1000
