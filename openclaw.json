@@ -22,7 +22,9 @@
       "192.168.0.0/16"
     ],
     "controlUi": {
-      "allowedOrigins": ["https://open.unippc24.com"]
+      "allowedOrigins": [
+        "https://open.uni-agency.com"
+      ]
     }
   }
 }
