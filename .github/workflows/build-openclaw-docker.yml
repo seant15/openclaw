@@ -40,7 +40,22 @@ jobs:
             VERSION="${{ github.event.inputs.version }}"
             echo "Using manually specified version: $VERSION"
           else
-            LATEST_RELEASE=$(curl -s https://api.github.com/repos/openclaw/openclaw/releases/latest | jq -r '.tag_name')
+            # Fetch with retry and better error handling
+            echo "Fetching latest release from GitHub API..."
+            LATEST_RELEASE=$(curl -fsSL --retry 3 --retry-delay 2 \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/openclaw/openclaw/releases/latest | jq -r '.tag_name')
+
+            # Validate the response
+            if [ "$LATEST_RELEASE" = "null" ] || [ -z "$LATEST_RELEASE" ]; then
+              echo "::error::Failed to fetch latest release from GitHub API. Response was: '$LATEST_RELEASE'"
+              echo "This may be due to:"
+              echo "  - GitHub API rate limiting (60 requests/hour for unauthenticated requests)"
+              echo "  - Network connectivity issues"
+              echo "  - Repository has no releases"
+              exit 1
+            fi
+
             VERSION=$(echo "$LATEST_RELEASE" | sed 's/^v//')
             echo "Latest Openclaw release: $VERSION"
           fi
