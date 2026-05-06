@@ -31,8 +31,10 @@ RUN set -eux; \
 # Fix: pnpm 9.11.0+ introduced minimumReleaseAge (default 7 days) for supply chain security.
 # Upstream openclaw frequently pins packages to very recent versions (sometimes hours old),
 # causing constant build failures. Disable the check entirely since we trust upstream.
+# Also ignore unused patches as upstream may have patches for packages not in current build.
 RUN printf '%s\n' \
   'minimumReleaseAge: 0' \
+  'allowUnusedPatches: true' \
   > pnpm-workspace.yaml
 
 RUN pnpm install --no-frozen-lockfile
