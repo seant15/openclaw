@@ -30,9 +30,15 @@ RUN set -eux; \
 
 # Fix: pnpm 9.11.0+ introduced minimumReleaseAge (default 7 days) for supply chain security.
 # Upstream openclaw frequently pins packages to very recent versions, which fail this check.
-# Use PNPM_IGNORE_PACKAGE_MANAGER_VERSION to bypass corepack and set min release age to 0.
-ENV PNPM_IGNORE_PACKAGE_MANAGER_VERSION=1
-RUN echo "minimumReleaseAge=0" >> .npmrc
+# We use pnpm-workspace.yaml to exclude specific packages while keeping the protection for others.
+RUN printf '%s\n' \
+  'minimumReleaseAge: 10080' \
+  'minimumReleaseAgeExclude:' \
+  '  - "@anthropic-ai/sdk"' \
+  '  - "@aws-sdk/client-bedrock"' \
+  '  - "@aws-sdk/client-bedrock-runtime"' \
+  '  - "@aws-sdk/credential-provider-node"' \
+  > pnpm-workspace.yaml
 
 RUN pnpm install --no-frozen-lockfile
 RUN pnpm build
