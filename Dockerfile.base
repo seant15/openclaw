@@ -28,8 +28,10 @@ RUN set -eux; \
     sed -i -E 's/"openclaw"[[:space:]]*:[[:space:]]*"workspace:[^"]+"/"openclaw": "*"/g' "$f"; \
   done
 
-# Fix: Disable pnpm minimumReleaseAge to allow installing freshly published packages
-RUN echo "minimumReleaseAge=0" >> .npmrc
+# Fix: pnpm 9.11.0+ introduced minimumReleaseAge (default 7 days) for supply chain security.
+# Upstream openclaw pins @anthropic-ai/sdk to a very recent version, which fails this check.
+# Exclude this specific package from the age check rather than disabling the security feature entirely.
+RUN echo "minimumReleaseAgeExclude[]=@anthropic-ai/sdk" >> .npmrc
 
 RUN pnpm install --no-frozen-lockfile
 RUN pnpm build
