@@ -37,6 +37,7 @@ RUN printf '%s\n' \
   '  - "@anthropic-ai/sdk"' \
   '  - "@aws-sdk/*"' \
   '  - "@copilotkit/*"' \
+  '  - "@google/*"' \
   '  - "@typescript/*"' \
   '  - "jsdom"' \
   > pnpm-workspace.yaml
