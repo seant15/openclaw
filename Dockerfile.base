@@ -38,6 +38,7 @@ RUN printf '%s\n' \
   '  - "@aws-sdk/*"' \
   '  - "@copilotkit/*"' \
   '  - "@google/*"' \
+  '  - "@mariozechner/*"' \
   '  - "@typescript/*"' \
   '  - "jsdom"' \
   > pnpm-workspace.yaml
