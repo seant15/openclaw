@@ -37,6 +37,7 @@ RUN printf '%s\n' \
   '  - "@anthropic-ai/sdk"' \
   '  - "@aws-sdk/*"' \
   '  - "@copilotkit/*"' \
+  '  - "jsdom"' \
   > pnpm-workspace.yaml
 
 RUN pnpm install --no-frozen-lockfile
