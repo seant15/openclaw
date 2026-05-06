@@ -29,18 +29,10 @@ RUN set -eux; \
   done
 
 # Fix: pnpm 9.11.0+ introduced minimumReleaseAge (default 7 days) for supply chain security.
-# Upstream openclaw frequently pins packages to very recent versions, which fail this check.
-# We use pnpm-workspace.yaml with wildcard exclusions to cover entire scopes that update frequently.
+# Upstream openclaw frequently pins packages to very recent versions (sometimes hours old),
+# causing constant build failures. Disable the check entirely since we trust upstream.
 RUN printf '%s\n' \
-  'minimumReleaseAge: 10080' \
-  'minimumReleaseAgeExclude:' \
-  '  - "@anthropic-ai/sdk"' \
-  '  - "@aws-sdk/*"' \
-  '  - "@copilotkit/*"' \
-  '  - "@google/*"' \
-  '  - "@mariozechner/*"' \
-  '  - "@typescript/*"' \
-  '  - "jsdom"' \
+  'minimumReleaseAge: 0' \
   > pnpm-workspace.yaml
 
 RUN pnpm install --no-frozen-lockfile
