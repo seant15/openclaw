@@ -1,39 +1,44 @@
 services:
   openclaw:
-    image: coollabsio/openclaw:latest
+    image: 'coollabsio/openclaw:latest'
     ports:
-      - "${PORT:-8080}:${PORT:-8080}"
-      - "9091:9091"  # OpenClaw Control Center Dashboard
+      - '${PORT:-8080}:${PORT:-8080}'
+      - '9091:9091'
     environment:
-      # Provider (at least one required)
-      - OPENCODE_API_KEY=${OPENCODE_API_KEY}
+      - 'OPENCODE_API_KEY=${OPENCODE_API_KEY}'
       - OPENCLAW_PRIMARY_MODEL=opencode/kimi-k2.5
-      # Auth
-      - AUTH_USERNAME=${AUTH_USERNAME:-admin}
-      - AUTH_PASSWORD=${AUTH_PASSWORD}
-      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
-      # Browser sidecar
-      - BROWSER_CDP_URL=http://browser:9223
+      - 'AUTH_USERNAME=${AUTH_USERNAME:-admin}'
+      - 'AUTH_PASSWORD=${AUTH_PASSWORD}'
+      - 'OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}'
+      - 'BROWSER_CDP_URL=http://browser:9223'
       - BROWSER_DEFAULT_PROFILE=openclaw
       - BROWSER_EVALUATE_ENABLED=true
     volumes:
-      - /opt/openclaw/data:/data                         # bind mount — preserves data, consistent with docker-compose.yml
-      - ./openclaw.json:/app/config/openclaw.json        # gateway security config (allowedOrigins + trustedProxies)
+      - '/opt/openclaw/data:/data'
+      - './openclaw.json:/app/config/openclaw.json'
     depends_on:
       - browser
     restart: unless-stopped
-
+    labels:
+      - 'traefik.http.services.https-0-ug0g8cs4kkw0040cwsswk40c-openclaw.loadbalancer.server.port=9090'
+    networks:
+      - default
+      - coolify
   browser:
-    image: coollabsio/openclaw-browser:latest
+    image: 'coollabsio/openclaw-browser:latest'
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
       - CHROME_CLI=--remote-debugging-port=9222
     volumes:
-      - browser-data:/config
+      - 'browser-data:/config'
     shm_size: 2g
     restart: unless-stopped
-
+    networks:
+      - default
 volumes:
-  browser-data:
+  browser-data: null
+networks:
+  coolify:
+    external: true
