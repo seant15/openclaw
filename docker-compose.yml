@@ -1,6 +1,8 @@
 services:
   openclaw:
     image: coollabsio/openclaw:latest
+    labels:
+      - "traefik.http.services.openclaw-ug0g8cs4kkw0040cwsswk40c-openclaw.loadbalancer.server.port=9090"
     ports:
       - "${PORT:-8080}:${PORT:-8080}"
       - "9091:9091"  # OpenClaw Control Center Dashboard
