@@ -27,6 +27,9 @@ services:
     depends_on:
       - browser
     restart: unless-stopped
+    networks:
+      - default
+      - coolify
 
   browser:
     image: coollabsio/openclaw-browser:latest
@@ -40,7 +43,13 @@ services:
       - browser-data:/config
     shm_size: 2g
     restart: unless-stopped
+    networks:
+      - default
 
 volumes:
   openclaw-data:
   browser-data:
+  
+networks:
+  coolify:
+    external: true
