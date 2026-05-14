@@ -4,6 +4,7 @@ services:
     ports:
       - '${PORT:-8080}:${PORT:-8080}'
       - '9091:9091'
+      - '18789:18789'
     environment:
       - 'OPENCODE_API_KEY=${OPENCODE_API_KEY}'
       - OPENCLAW_PRIMARY_MODEL=opencode/kimi-k2.5
