@@ -36,33 +36,19 @@ jobs:
       - name: Get latest Openclaw release
         id: openclaw-release
         run: |
-          if [ -n "${{ github.event.inputs.version }}" ]; then
-            if [ "${{ github.event.inputs.version }}" = "dockerfile" ]; then
+          INPUT_VERSION="${{ github.event.inputs.version }}"
+          if [ -n "$INPUT_VERSION" ]; then
+            if [ "$INPUT_VERSION" = "dockerfile" ]; then
               VERSION="dockerfile"
               echo "Using version from Dockerfile.base (dockerfile mode)"
             else
-              VERSION="${{ github.event.inputs.version }}"
+              VERSION="$INPUT_VERSION"
               echo "Using manually specified version: $VERSION"
             fi
           else
-            # Fetch with retry and better error handling
-            echo "Fetching latest release from GitHub API..."
-            LATEST_RELEASE=$(curl -fsSL --retry 3 --retry-delay 2 \
-              -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/openclaw/openclaw/releases/latest | jq -r '.tag_name')
-
-            # Validate the response
-            if [ "$LATEST_RELEASE" = "null" ] || [ -z "$LATEST_RELEASE" ]; then
-              echo "::error::Failed to fetch latest release from GitHub API. Response was: '$LATEST_RELEASE'"
-              echo "This may be due to:"
-              echo "  - GitHub API rate limiting (60 requests/hour for unauthenticated requests)"
-              echo "  - Network connectivity issues"
-              echo "  - Repository has no releases"
-              exit 1
-            fi
-
-            VERSION=$(echo "$LATEST_RELEASE" | sed 's/^v//')
-            echo "Latest Openclaw release: $VERSION"
+            # No input version - use dockerfile default to avoid latest release issues
+            VERSION="dockerfile"
+            echo "No version specified, using Dockerfile.base default (dockerfile mode)"
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
@@ -243,5 +229,6 @@ jobs:
           echo "Successfully built and published:" >> $GITHUB_STEP_SUMMARY
           echo "- \`${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${VERSION}\` (base)" >> $GITHUB_STEP_SUMMARY
           echo "- \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION}\` (final)" >> $GITHUB_STEP_SUMMARY
+
 
 
