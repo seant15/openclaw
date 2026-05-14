@@ -19,7 +19,7 @@ RUN corepack enable
 WORKDIR /openclaw
 
 # Lock to stable version before @noble/ed25519 dependency issue was introduced
-ARG OPENCLAW_GIT_REF=v2026.5.10-beta.5
+ARG OPENCLAW_GIT_REF=v2026.5.7
 RUN git clone --depth 1 --branch "${OPENCLAW_GIT_REF}" https://github.com/openclaw/openclaw.git .
 
 # Patch: relax version requirements for packages using workspace protocol.
@@ -109,5 +109,6 @@ RUN printf '%s\n' '#!/usr/bin/env bash' 'exec node /opt/openclaw/app/openclaw.mj
 RUN ln -s /opt/openclaw/app/docs /opt/openclaw/docs \
   && ln -s /opt/openclaw/app/assets /opt/openclaw/assets \
   && ln -s /opt/openclaw/app/package.json /opt/openclaw/package.json
+
 
 
