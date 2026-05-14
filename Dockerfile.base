@@ -39,6 +39,16 @@ RUN printf '%s\n' \
 
 RUN pnpm install --no-frozen-lockfile
 RUN pnpm build
+
+# Patch: Workaround for intermittent @create-markdown/preview build error.
+# Upstream package sometimes fails to include themes/system.css causing build failures.
+# This sed comments out the problematic import in styles.css.
+RUN set -eux; \
+  if [ -f ui/src/styles.css ]; then \
+    sed -i 's|@import "@create-markdown/preview/themes/system.css";|/* @import "@create-markdown/preview/themes/system.css"; */|g' ui/src/styles.css; \
+    echo "Patched: commented out @create-markdown/preview import"; \
+  fi
+
 ENV OPENCLAW_PREFER_PNPM=1
 RUN pnpm ui:install && pnpm ui:build
 
