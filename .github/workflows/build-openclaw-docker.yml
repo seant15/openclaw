@@ -114,8 +114,9 @@ jobs:
       - name: Prepare build args
         id: build-args
         run: |
-          if [ "${{ needs.check-release.outputs.version }}" != "dockerfile" ]; then
-            echo "build_args=OPENCLAW_GIT_REF=v${{ needs.check-release.outputs.version }}" >> $GITHUB_OUTPUT
+          VERSION="${{ needs.check-release.outputs.version }}"
+          if [ "$VERSION" != "dockerfile" ]; then
+            echo "build_args=OPENCLAW_GIT_REF=v$VERSION" >> $GITHUB_OUTPUT
           else
             echo "build_args=" >> $GITHUB_OUTPUT
           fi
@@ -242,4 +243,5 @@ jobs:
           echo "Successfully built and published:" >> $GITHUB_STEP_SUMMARY
           echo "- \`${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${VERSION}\` (base)" >> $GITHUB_STEP_SUMMARY
           echo "- \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION}\` (final)" >> $GITHUB_STEP_SUMMARY
+
 
