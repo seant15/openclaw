@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Openclaw version to build (e.g., 2026.1.29). Leave empty to build latest.'
+        description: 'Openclaw version to build (e.g., 2026.1.29). Leave empty to build latest, or use "dockerfile" to use the version specified in Dockerfile.base.'
         required: false
         type: string
       force_rebuild:
@@ -37,8 +37,13 @@ jobs:
         id: openclaw-release
         run: |
           if [ -n "${{ github.event.inputs.version }}" ]; then
-            VERSION="${{ github.event.inputs.version }}"
-            echo "Using manually specified version: $VERSION"
+            if [ "${{ github.event.inputs.version }}" = "dockerfile" ]; then
+              VERSION="dockerfile"
+              echo "Using version from Dockerfile.base (dockerfile mode)"
+            else
+              VERSION="${{ github.event.inputs.version }}"
+              echo "Using manually specified version: $VERSION"
+            fi
           else
             # Fetch with retry and better error handling
             echo "Fetching latest release from GitHub API..."
@@ -106,6 +111,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Prepare build args
+        id: build-args
+        run: |
+          if [ "${{ needs.check-release.outputs.version }}" != "dockerfile" ]; then
+            echo "build_args=OPENCLAW_GIT_REF=v${{ needs.check-release.outputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "build_args=" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build and Push Base Image (${{ matrix.arch }})
         uses: docker/build-push-action@v6
         with:
@@ -113,8 +127,7 @@ jobs:
           file: ./Dockerfile.base
           platforms: linux/${{ matrix.arch }}
           push: true
-          build-args: |
-            OPENCLAW_GIT_REF=v${{ needs.check-release.outputs.version }}
+          build-args: ${{ steps.build-args.outputs.build_args }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${{ needs.check-release.outputs.version }}-${{ matrix.arch }}
           cache-from: type=gha,scope=base-${{ matrix.arch }}
@@ -229,3 +242,4 @@ jobs:
           echo "Successfully built and published:" >> $GITHUB_STEP_SUMMARY
           echo "- \`${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:${VERSION}\` (base)" >> $GITHUB_STEP_SUMMARY
           echo "- \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION}\` (final)" >> $GITHUB_STEP_SUMMARY
+
