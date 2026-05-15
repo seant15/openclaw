@@ -21,9 +21,11 @@
       "172.16.0.0/12",
       "192.168.0.0/16"
     ],
+    "pairingRequired": false,
     "controlUi": {
       "allowedOrigins": [
-        "https://open.uni-agency.com"
+        "https://open.uni-agency.com",
+        "https://dash.uni-agency.com"
       ]
     }
   }
